@@ -1,2 +1,9 @@
 # AutoML-Pipeline-Generator-for-Tabular-Data
-AutoML Pipeline Generator for Tabular Data is a modular ML system that automates preprocessing, model generation, hyperparameter tuning, evaluation, and ranking for structured datasets. It compares multiple algorithms, selects the best model based on F1 score, and saves results and the trained model, following clean engineering practices.
+
+The complete production project is located in [`automl-pipeline/`](automl-pipeline/).
+
+Run from that directory:
+
+```bash
+python src/main.py --data data/breast_cancer.csv --target target
+```

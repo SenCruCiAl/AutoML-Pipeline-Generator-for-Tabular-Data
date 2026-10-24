@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -14,8 +15,8 @@ def get_model_configs(random_state: int = 42) -> dict:
         "LogisticRegression": {
             "estimator": LogisticRegression(max_iter=2000, random_state=random_state),
             "param_grid": {
+                # lbfgs handles both binary and multiclass; liblinear is binary-only.
                 "classifier__C": [0.1, 1.0, 10.0],
-                "classifier__solver": ["liblinear", "lbfgs"],
             },
         },
         "RandomForest": {
@@ -35,11 +36,12 @@ def get_model_configs(random_state: int = 42) -> dict:
             },
         },
         "SVM": {
-            "estimator": SVC(probability=True, random_state=random_state),
+            # SVC(probability=True) is deprecated since scikit-learn 1.9; this is its replacement.
+            "estimator": CalibratedClassifierCV(SVC(random_state=random_state), ensemble=False),
             "param_grid": {
-                "classifier__C": [0.5, 1.0, 2.0],
-                "classifier__kernel": ["linear", "rbf"],
-                "classifier__gamma": ["scale", "auto"],
+                "classifier__estimator__C": [0.5, 1.0, 2.0],
+                "classifier__estimator__kernel": ["linear", "rbf"],
+                "classifier__estimator__gamma": ["scale", "auto"],
             },
         },
         "KNN": {

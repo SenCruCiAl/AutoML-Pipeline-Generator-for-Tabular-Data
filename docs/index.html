@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tabular Model Selection</title>
+<meta name="description" content="A scikit-learn pipeline that tunes five classifiers by cross-validation and reports an unbiased held-out score, run on five datasets.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f4ef; --ink: #1e1c1a; --muted: #6c675f; --rule: #dad4ca; --panel: #eee9e1;
+    --accent: #a8492a; --cv: #4a4640; --soft: rgba(168, 73, 42, .12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161513; --ink: #eae6df; --muted: #9d978d; --rule: #35322d; --panel: #1f1d1a;
+      --accent: #e48a63; --cv: #bdb6aa; --soft: rgba(228, 138, 99, .14);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161513; --ink: #eae6df; --muted: #9d978d; --rule: #35322d; --panel: #1f1d1a;
+    --accent: #e48a63; --cv: #bdb6aa; --soft: rgba(228, 138, 99, .14);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 18px/1.6 "Source Serif 4", Georgia, serif; }
+  main { max-width: 820px; margin: 0 auto; padding: 56px 16px 80px; }
+  .kicker { font: 500 12px/1 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  h1 { font-size: 40px; line-height: 1.12; font-weight: 600; margin: 14px 0 12px; letter-spacing: -.01em; }
+  h2 { font-size: 22px; font-weight: 600; margin: 52px 0 8px; }
+  h2 .n { font: 500 13px "IBM Plex Mono", monospace; color: var(--muted); margin-right: 10px; }
+  p { margin: 0 0 14px; }
+  a { color: var(--accent); text-underline-offset: 3px; }
+  header { border-bottom: 1px solid var(--rule); padding-bottom: 28px; margin-bottom: 8px; }
+  .links { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 16px; font: 14px "IBM Plex Mono", monospace; }
+  .mono, td.num, th.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  .picker { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--rule); margin-top: 26px; }
+  .picker button {
+    font: 13px "IBM Plex Mono", monospace; color: var(--muted); background: none; border: 0;
+    border-bottom: 2px solid transparent; padding: 8px 12px 7px; margin-bottom: -1px; cursor: pointer;
+  }
+  .picker button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+  .picker button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .meta { font: 13px "IBM Plex Mono", monospace; color: var(--muted); margin: 12px 0 4px; }
+  .meta b { color: var(--ink); font-weight: 500; }
+  .title { font-size: 20px; margin: 8px 0 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 14px 0 8px; }
+  th, td { text-align: left; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+  th { font-weight: 600; font-size: 13px; color: var(--muted); }
+  td.num, th.num { text-align: right; padding-left: 10px; padding-right: 0; font-size: 14px; }
+  tr.sel td { background: var(--soft); }
+  tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); padding-left: 10px; }
+  .tag { font: 11px "IBM Plex Mono", monospace; color: var(--accent); margin-left: 6px; white-space: nowrap; }
+  .tag.alt { color: var(--muted); }
+  .params { font: 12px "IBM Plex Mono", monospace; color: var(--muted); display: block; }
+  svg { width: 100%; display: block; }
+  svg text { font-family: "IBM Plex Mono", monospace; fill: var(--muted); font-size: 11px; }
+  .legend { display: flex; gap: 18px; font: 12px "IBM Plex Mono", monospace; color: var(--muted); margin: 4px 0 0; flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; }
+  .note { background: var(--panel); border-left: 3px solid var(--accent); padding: 12px 16px; font-size: 16px; margin: 18px 0; }
+  .summary { width: 100%; }
+  pre { background: var(--panel); padding: 12px 14px; font: 14px/1.5 "IBM Plex Mono", monospace; overflow-x: auto; margin: 10px 0 16px; }
+  ol { padding-left: 22px; margin: 0 0 14px; }
+  li { margin-bottom: 6px; }
+  footer { margin-top: 64px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--muted); }
+  @media (max-width: 640px) {
+    body { font-size: 17px; }
+    h1 { font-size: 31px; }
+    .hide-sm { display: none; }
+    .summary th, .summary td { overflow-wrap: anywhere; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="kicker">scikit-learn · model selection · honest evaluation</div>
+    <h1>Pick a classifier by cross-validation, then report a score the selection never saw</h1>
+    <p>Give the pipeline a CSV and a target column. It imputes, encodes and scales inside each fold, tunes five model
+      families by grid search, picks one by cross-validated F1 on the training split, and only then scores everything
+      on a held-out test set. Results below are from five datasets.</p>
+    <div class="links">
+      <a href="https://github.com/SenCruCiAl/AutoML-Pipeline-Generator-for-Tabular-Data">Source on GitHub</a>
+      <a href="#why">Why selection must not use the test set</a>
+      <a href="#run">Run it</a>
+    </div>
+  </header>
+
+  <div class="picker" role="tablist" id="picker"></div>
+  <p class="title" id="dtitle"></p>
+  <div class="meta" id="dmeta"></div>
+
+  <svg id="chart" height="220" role="img" aria-label="CV versus test F1 per model"></svg>
+  <div class="legend"><span><i style="background:var(--cv)"></i>CV F1, training split (used to select)</span>
+    <span><i style="background:var(--accent)"></i>Test F1, held out</span></div>
+
+  <table id="board">
+    <thead><tr><th>Model</th><th class="num">CV F1</th><th class="num">± sd</th><th class="num">Test F1</th>
+      <th class="num hide-sm">Accuracy</th><th class="num hide-sm">ROC-AUC</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <p id="verdict" style="font-size:16px"></p>
+
+  <h2 id="why"><span class="n">01</span>Why selection must not use the test set</h2>
+  <p>An earlier version of this project ranked the models by test-set F1 and reported the winner's test score. That
+    score is biased upward: taking the best of five noisy estimates picks the model that got lucky on those particular
+    test rows (Cawley &amp; Talbot, 2010). The fix is to choose with cross-validation on the training split, so the
+    test set is used exactly once.</p>
+  <table class="summary" id="summary">
+    <thead><tr><th>Dataset</th><th>Chosen by CV</th><th>Chosen by test F1</th><th class="num">CV − test</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <div class="note" id="sumnote"></div>
+
+  <h2><span class="n">02</span>Other fixes in this version</h2>
+  <ol>
+    <li><b>Multiclass targets crashed.</b> Scoring was hard-coded to binary F1 and the logistic-regression grid
+      included the binary-only <span class="mono">liblinear</span> solver, so any three-class CSV failed. Labels are
+      now integer-encoded, binary problems use F1 and multiclass use macro F1.</li>
+    <li><b>String labels and missing targets.</b> Targets like <span class="mono">"yes"/"no"</span> now work, and rows
+      with a missing target are dropped instead of breaking the split.</li>
+    <li><b>Deprecated API.</b> <span class="mono">SVC(probability=True)</span> is deprecated in scikit-learn 1.9 and
+      will be removed in 1.11. It is replaced with <span class="mono">CalibratedClassifierCV(SVC(), ensemble=False)</span>.</li>
+    <li><b>A redundant, biased CV pass</b> that re-scored the tuned model on the same folds was removed; the
+      grid search's own CV score and spread are reported instead.</li>
+  </ol>
+
+  <h2 id="run"><span class="n">03</span>Run it</h2>
+  <pre>pip install -r requirements.txt
+python src/main.py --data data/breast_cancer.csv --target target
+python scripts/run_benchmarks.py   # regenerates docs/results.json
+pytest -q tests</pre>
+  <p>Outputs: <span class="mono">results/results.csv</span> (ranked by CV F1, with a <span class="mono">selected</span>
+    column), <span class="mono">results/model_comparison.png</span> and <span class="mono">models/best_model.pkl</span>.</p>
+
+  <footer>Cawley, G. C. &amp; Talbot, N. L. C. (2010). On over-fitting in model selection and subsequent selection bias
+    in performance evaluation. <i>JMLR</i> 11, 2079–2107. The first four datasets ship with scikit-learn; the fifth is
+    synthetic, generated by <span class="mono">scripts/run_benchmarks.py</span>.</footer>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (t, a, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); p && p.appendChild(e); return e; };
+  const f3 = v => (v === null || Number.isNaN(v) ? "–" : v.toFixed(3));
+  const NAMES = { breast_cancer: "breast cancer", wine: "wine", iris: "iris", digits: "digits", mixed: "mixed types" };
+  let data = [], current = 0;
+
+  function chart(d) {
+    const svg = $("chart"); svg.replaceChildren();
+    const W = Math.round(svg.parentElement.clientWidth), H = 220;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const rs = d.results;
+    const lo = Math.max(0, Math.floor((Math.min(...rs.map(r => Math.min(r.cv_mean_f1, r.f1_score))) - .03) * 20) / 20);
+    const L = 46, R = W - 6, T = 10, B = H - 40, y = v => B - (v - lo) / (1 - lo) * (B - T);
+    for (let v = lo; v <= 1.0001; v += (1 - lo) / 4) {
+      el("line", { x1: L, x2: R, y1: y(v), y2: y(v), stroke: css("--rule") }, svg);
+      el("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end" }, svg).textContent = v.toFixed((1 - lo) / 4 < 0.05 ? 3 : 2);
+    }
+    const slot = (R - L) / rs.length, bw = Math.min(26, slot / 3.2);
+    rs.forEach((r, i) => {
+      const cx = L + slot * (i + .5);
+      el("rect", { x: cx - bw - 2, y: y(r.cv_mean_f1), width: bw, height: B - y(r.cv_mean_f1), fill: css("--cv") }, svg);
+      const sdTop = y(Math.min(1, r.cv_mean_f1 + r.cv_std_f1)), sdBot = y(Math.max(lo, r.cv_mean_f1 - r.cv_std_f1));
+      el("line", { x1: cx - bw / 2 - 2, x2: cx - bw / 2 - 2, y1: sdTop, y2: sdBot, stroke: css("--ink"), "stroke-width": 1 }, svg);
+      el("rect", { x: cx + 2, y: y(r.f1_score), width: bw, height: B - y(r.f1_score), fill: css("--accent") }, svg);
+      const short = r.model.replace("LogisticRegression", "LogReg").replace("GradientBoosting", "GradBoost").replace("RandomForest", "Forest");
+      el("text", { x: cx, y: B + 16, "text-anchor": "middle", style: r.selected ? `fill:${css("--ink")}` : "" }, svg).textContent = short;
+      if (r.selected) el("text", { x: cx, y: B + 30, "text-anchor": "middle", style: `fill:${css("--accent")}` }, svg).textContent = "selected";
+    });
+  }
+
+  function render() {
+    const d = data[current];
+    $("dtitle").textContent = d.title;
+    $("dmeta").innerHTML = `<b>${d.rows}</b> rows · <b>${d.features}</b> features (${d.categorical} categorical) · ` +
+      `<b>${d.missing_cells}</b> missing cells · <b>${d.classes.length}</b> classes · metric: <b>${d.metric}</b>`;
+    chart(d);
+    const testBest = d.results.reduce((a, b) => (b.f1_score > a.f1_score ? b : a));
+    $("board").querySelector("tbody").innerHTML = d.results.map(r => {
+      const params = Object.entries(r.best_params).map(([k, v]) => `${k}=${v}`).join(", ");
+      const tags = (r.selected ? '<span class="tag">selected</span>' : "") +
+        (r === testBest && !r.selected ? '<span class="tag alt">best on test</span>' : "");
+      return `<tr class="${r.selected ? "sel" : ""}"><td>${r.model}${tags}<span class="params">${params}</span></td>` +
+        `<td class="num">${f3(r.cv_mean_f1)}</td><td class="num">${f3(r.cv_std_f1)}</td><td class="num">${f3(r.f1_score)}</td>` +
+        `<td class="num hide-sm">${f3(r.accuracy)}</td><td class="num hide-sm">${f3(r.roc_auc)}</td></tr>`;
+    }).join("");
+    const w = d.results[0];
+    $("verdict").textContent = testBest === w
+      ? `Cross-validation and the test set agree here: ${w.model} is best on both.`
+      : `Cross-validation picks ${w.model}; ranking by test F1 would have picked ${testBest.model}. ` +
+        `On the ${Math.ceil(d.rows * 0.2)} test rows they differ by ${(testBest.f1_score - w.f1_score).toFixed(3)} F1; picking by that number would make the reported score optimistic.`;
+  }
+
+  function summary() {
+    let disagree = 0, optimistic = 0;
+    $("summary").querySelector("tbody").innerHTML = data.map(d => {
+      const w = d.results[0], tb = d.results.reduce((a, b) => (b.f1_score > a.f1_score ? b : a));
+      if (tb !== w) disagree++;
+      const gap = w.cv_mean_f1 - w.f1_score; if (gap > 0) optimistic++;
+      return `<tr><td>${NAMES[d.key] || d.key}</td><td>${w.model}</td><td>${tb === w ? "same" : tb.model}</td>` +
+        `<td class="num">${gap >= 0 ? "+" : ""}${gap.toFixed(3)}</td></tr>`;
+    }).join("");
+    $("sumnote").textContent = `On ${disagree} of ${data.length} datasets the test set would have chosen a different model. ` +
+      `And on ${optimistic} of ${data.length}, the winner's CV score is above its test score: the best of several noisy ` +
+      `estimates tends to be an overestimate, which is exactly why the reported number has to come from data the selection never touched.`;
+  }
+
+  fetch("results.json").then(r => r.json()).then(j => {
+    data = j;
+    const picker = $("picker");
+    data.forEach((d, i) => {
+      const b = document.createElement("button");
+      b.textContent = NAMES[d.key] || d.key; b.setAttribute("role", "tab"); b.setAttribute("aria-selected", i === 0);
+      b.onclick = () => { current = i; picker.querySelectorAll("button").forEach(x => x.setAttribute("aria-selected", x === b)); render(); };
+      picker.appendChild(b);
+    });
+    render(); summary();
+    let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(render, 120); });
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", render);
+  }).catch(() => { $("dtitle").textContent = "Could not load results.json."; });
+})();
+</script>
+</body>
+</html>

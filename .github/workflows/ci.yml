@@ -13,6 +13,7 @@ jobs:
           python-version: '3.11'
           cache: pip
       - run: pip install -r requirements.txt
+      - run: pytest -q tests
       - name: Run pipeline end-to-end
         run: python src/main.py --data data/breast_cancer.csv --target target --cv 3
       - name: Check outputs exist

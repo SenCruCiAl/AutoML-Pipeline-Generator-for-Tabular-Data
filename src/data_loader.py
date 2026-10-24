@@ -11,7 +11,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,6 +25,7 @@ class DatasetBundle:
     y_train: pd.Series
     y_test: pd.Series
     preprocessor: ColumnTransformer
+    class_names: list[str]
 
 
 class DataLoader:
@@ -83,16 +84,24 @@ class DataLoader:
     def prepare_data(self) -> DatasetBundle:
         """Load, split, and prepare preprocessing config for model training."""
         df = self._load_dataframe()
+        df = df.dropna(subset=[self.target_column])
         X = df.drop(columns=[self.target_column])
-        y = df[self.target_column]
+        if df[self.target_column].nunique() < 2:
+            raise ValueError("Target column needs at least two classes.")
+
+        # Integer-encode labels so string targets ("yes"/"no") and multiclass
+        # targets work with every metric; original names are kept for reporting.
+        encoder = LabelEncoder()
+        y = pd.Series(encoder.fit_transform(df[self.target_column]), index=df.index, name=self.target_column)
 
         X_train, X_test, y_train, y_test = train_test_split(
             X,
             y,
             test_size=self.test_size,
             random_state=self.random_state,
-            stratify=y if y.nunique() > 1 else None,
+            stratify=y,
         )
 
         preprocessor = self._build_preprocessor(X_train)
-        return DatasetBundle(X_train, X_test, y_train, y_test, preprocessor)
+        class_names = [str(c) for c in encoder.classes_]
+        return DatasetBundle(X_train, X_test, y_train, y_test, preprocessor, class_names)

@@ -1,0 +1,477 @@
+[
+  {
+    "key": "breast_cancer",
+    "title": "Breast Cancer Wisconsin (Diagnostic)",
+    "rows": 569,
+    "features": 30,
+    "categorical": 0,
+    "missing_cells": 0,
+    "classes": [
+      "0",
+      "1"
+    ],
+    "metric": "F1",
+    "results": [
+      {
+        "model": "LogisticRegression",
+        "selected": true,
+        "best_params": {
+          "C": "0.1"
+        },
+        "cv_mean_f1": 0.9861164154764722,
+        "cv_std_f1": 0.0042373687539358955,
+        "accuracy": 0.9736842105263158,
+        "precision": 0.9726027397260274,
+        "recall": 0.9861111111111112,
+        "f1_score": 0.9793103448275862,
+        "roc_auc": 0.9957010582010581
+      },
+      {
+        "model": "KNN",
+        "selected": false,
+        "best_params": {
+          "metric": "manhattan",
+          "n_neighbors": "3",
+          "weights": "uniform"
+        },
+        "cv_mean_f1": 0.9773897261895368,
+        "cv_std_f1": 0.01043793866015336,
+        "accuracy": 0.9649122807017544,
+        "precision": 0.9594594594594594,
+        "recall": 0.9861111111111112,
+        "f1_score": 0.9726027397260274,
+        "roc_auc": 0.9713955026455027
+      },
+      {
+        "model": "SVM",
+        "selected": false,
+        "best_params": {
+          "C": "0.5",
+          "gamma": "scale",
+          "kernel": "rbf"
+        },
+        "cv_mean_f1": 0.9755274575101829,
+        "cv_std_f1": 0.008489306919682726,
+        "accuracy": 0.9824561403508771,
+        "precision": 0.9861111111111112,
+        "recall": 0.9861111111111112,
+        "f1_score": 0.9861111111111112,
+        "roc_auc": 0.9947089947089948
+      },
+      {
+        "model": "GradientBoosting",
+        "selected": false,
+        "best_params": {
+          "learning_rate": "0.1",
+          "max_depth": "2",
+          "n_estimators": "200"
+        },
+        "cv_mean_f1": 0.9737260100557726,
+        "cv_std_f1": 0.01249772692684044,
+        "accuracy": 0.9473684210526315,
+        "precision": 0.9459459459459459,
+        "recall": 0.9722222222222222,
+        "f1_score": 0.958904109589041,
+        "roc_auc": 0.9914021164021164
+      },
+      {
+        "model": "RandomForest",
+        "selected": false,
+        "best_params": {
+          "max_depth": "None",
+          "min_samples_split": "2",
+          "n_estimators": "200"
+        },
+        "cv_mean_f1": 0.9700273492058795,
+        "cv_std_f1": 0.014628160171135949,
+        "accuracy": 0.956140350877193,
+        "precision": 0.958904109589041,
+        "recall": 0.9722222222222222,
+        "f1_score": 0.9655172413793104,
+        "roc_auc": 0.9932208994708995
+      }
+    ]
+  },
+  {
+    "key": "wine",
+    "title": "Wine (3 cultivars)",
+    "rows": 178,
+    "features": 13,
+    "categorical": 0,
+    "missing_cells": 0,
+    "classes": [
+      "0",
+      "1",
+      "2"
+    ],
+    "metric": "macro F1",
+    "results": [
+      {
+        "model": "SVM",
+        "selected": true,
+        "best_params": {
+          "C": "2.0",
+          "gamma": "scale",
+          "kernel": "rbf"
+        },
+        "cv_mean_f1": 0.9926570048309179,
+        "cv_std_f1": 0.014685990338164246,
+        "accuracy": 0.9722222222222222,
+        "precision": 0.9777777777777779,
+        "recall": 0.9666666666666667,
+        "f1_score": 0.9709618874773139,
+        "roc_auc": 1.0
+      },
+      {
+        "model": "LogisticRegression",
+        "selected": false,
+        "best_params": {
+          "C": "1.0"
+        },
+        "cv_mean_f1": 0.9796369712159185,
+        "cv_std_f1": 0.027282763728174786,
+        "accuracy": 0.9722222222222222,
+        "precision": 0.9777777777777779,
+        "recall": 0.9666666666666667,
+        "f1_score": 0.9709618874773139,
+        "roc_auc": 1.0
+      },
+      {
+        "model": "RandomForest",
+        "selected": false,
+        "best_params": {
+          "max_depth": "None",
+          "min_samples_split": "2",
+          "n_estimators": "100"
+        },
+        "cv_mean_f1": 0.9789226855016329,
+        "cv_std_f1": 0.028548411231649046,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0
+      },
+      {
+        "model": "KNN",
+        "selected": false,
+        "best_params": {
+          "metric": "manhattan",
+          "n_neighbors": "7",
+          "weights": "uniform"
+        },
+        "cv_mean_f1": 0.9788774579244361,
+        "cv_std_f1": 0.01727865422090533,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0
+      },
+      {
+        "model": "GradientBoosting",
+        "selected": false,
+        "best_params": {
+          "learning_rate": "0.1",
+          "max_depth": "2",
+          "n_estimators": "200"
+        },
+        "cv_mean_f1": 0.9661661564979642,
+        "cv_std_f1": 0.0228536541836513,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0
+      }
+    ]
+  },
+  {
+    "key": "iris",
+    "title": "Iris",
+    "rows": 150,
+    "features": 4,
+    "categorical": 0,
+    "missing_cells": 0,
+    "classes": [
+      "0",
+      "1",
+      "2"
+    ],
+    "metric": "macro F1",
+    "results": [
+      {
+        "model": "SVM",
+        "selected": true,
+        "best_params": {
+          "C": "0.5",
+          "gamma": "scale",
+          "kernel": "linear"
+        },
+        "cv_mean_f1": 0.9747027699968877,
+        "cv_std_f1": 0.03381318620930142,
+        "accuracy": 0.9666666666666667,
+        "precision": 0.9696969696969697,
+        "recall": 0.9666666666666667,
+        "f1_score": 0.9665831244778612,
+        "roc_auc": 0.9833333333333333
+      },
+      {
+        "model": "KNN",
+        "selected": false,
+        "best_params": {
+          "metric": "minkowski",
+          "n_neighbors": "3",
+          "weights": "uniform"
+        },
+        "cv_mean_f1": 0.9665359477124185,
+        "cv_std_f1": 0.016732026143790834,
+        "accuracy": 0.9333333333333333,
+        "precision": 0.9444444444444445,
+        "recall": 0.9333333333333332,
+        "f1_score": 0.9326599326599326,
+        "roc_auc": 0.9933333333333333
+      },
+      {
+        "model": "LogisticRegression",
+        "selected": false,
+        "best_params": {
+          "C": "10.0"
+        },
+        "cv_mean_f1": 0.9663367569249923,
+        "cv_std_f1": 0.03162306668752773,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0
+      },
+      {
+        "model": "RandomForest",
+        "selected": false,
+        "best_params": {
+          "max_depth": "None",
+          "min_samples_split": "5",
+          "n_estimators": "100"
+        },
+        "cv_mean_f1": 0.9579707438530969,
+        "cv_std_f1": 0.02677171608964413,
+        "accuracy": 0.9666666666666667,
+        "precision": 0.9696969696969697,
+        "recall": 0.9666666666666667,
+        "f1_score": 0.9665831244778612,
+        "roc_auc": 0.9900000000000001
+      },
+      {
+        "model": "GradientBoosting",
+        "selected": false,
+        "best_params": {
+          "learning_rate": "0.05",
+          "max_depth": "3",
+          "n_estimators": "100"
+        },
+        "cv_mean_f1": 0.9494055399937753,
+        "cv_std_f1": 0.03172953563462674,
+        "accuracy": 0.9666666666666667,
+        "precision": 0.9696969696969697,
+        "recall": 0.9666666666666667,
+        "f1_score": 0.9665831244778612,
+        "roc_auc": 0.9949999999999999
+      }
+    ]
+  },
+  {
+    "key": "digits",
+    "title": "Optical digits (8x8, 10 classes)",
+    "rows": 1797,
+    "features": 64,
+    "categorical": 0,
+    "missing_cells": 0,
+    "classes": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "metric": "macro F1",
+    "results": [
+      {
+        "model": "SVM",
+        "selected": true,
+        "best_params": {
+          "C": "2.0",
+          "gamma": "scale",
+          "kernel": "rbf"
+        },
+        "cv_mean_f1": 0.9819127166014152,
+        "cv_std_f1": 0.003934812661542341,
+        "accuracy": 0.9777777777777777,
+        "precision": 0.9784495021337127,
+        "recall": 0.9775396825396825,
+        "f1_score": 0.977633281732239,
+        "roc_auc": 0.9936048589692953
+      },
+      {
+        "model": "RandomForest",
+        "selected": false,
+        "best_params": {
+          "max_depth": "None",
+          "min_samples_split": "2",
+          "n_estimators": "200"
+        },
+        "cv_mean_f1": 0.9769666947527416,
+        "cv_std_f1": 0.009707826658350467,
+        "accuracy": 0.9638888888888889,
+        "precision": 0.9644070168644474,
+        "recall": 0.9634877734877735,
+        "f1_score": 0.9633911447922225,
+        "roc_auc": 0.9992375220960246
+      },
+      {
+        "model": "KNN",
+        "selected": false,
+        "best_params": {
+          "metric": "minkowski",
+          "n_neighbors": "3",
+          "weights": "uniform"
+        },
+        "cv_mean_f1": 0.9761695766858736,
+        "cv_std_f1": 0.007575249805188257,
+        "accuracy": 0.9666666666666667,
+        "precision": 0.9677586019362335,
+        "recall": 0.9664242814242814,
+        "f1_score": 0.9663040093538994,
+        "roc_auc": 0.9908010443893657
+      },
+      {
+        "model": "GradientBoosting",
+        "selected": false,
+        "best_params": {
+          "learning_rate": "0.1",
+          "max_depth": "2",
+          "n_estimators": "200"
+        },
+        "cv_mean_f1": 0.9686223939925915,
+        "cv_std_f1": 0.009481050966311008,
+        "accuracy": 0.9666666666666667,
+        "precision": 0.9667041477567793,
+        "recall": 0.9663492063492065,
+        "f1_score": 0.9662641210709897,
+        "roc_auc": 0.9990835707502375
+      },
+      {
+        "model": "LogisticRegression",
+        "selected": false,
+        "best_params": {
+          "C": "1.0"
+        },
+        "cv_mean_f1": 0.9678801578605818,
+        "cv_std_f1": 0.007275568815350857,
+        "accuracy": 0.9722222222222222,
+        "precision": 0.9721260358102464,
+        "recall": 0.9719047619047618,
+        "f1_score": 0.9719402197048348,
+        "roc_auc": 0.9990921968977523
+      }
+    ]
+  },
+  {
+    "key": "mixed",
+    "title": "Synthetic churn: mixed types, missing values, string labels",
+    "rows": 600,
+    "features": 4,
+    "categorical": 2,
+    "missing_cells": 71,
+    "classes": [
+      "churn",
+      "stay"
+    ],
+    "metric": "F1",
+    "results": [
+      {
+        "model": "SVM",
+        "selected": true,
+        "best_params": {
+          "C": "1.0",
+          "gamma": "auto",
+          "kernel": "rbf"
+        },
+        "cv_mean_f1": 0.7277513887517194,
+        "cv_std_f1": 0.05180293866960576,
+        "accuracy": 0.6583333333333333,
+        "precision": 0.6666666666666666,
+        "recall": 0.6984126984126984,
+        "f1_score": 0.6821705426356589,
+        "roc_auc": 0.7092731829573936
+      },
+      {
+        "model": "LogisticRegression",
+        "selected": false,
+        "best_params": {
+          "C": "1.0"
+        },
+        "cv_mean_f1": 0.7242624198012387,
+        "cv_std_f1": 0.03370502151031374,
+        "accuracy": 0.6333333333333333,
+        "precision": 0.6507936507936508,
+        "recall": 0.6507936507936508,
+        "f1_score": 0.6507936507936508,
+        "roc_auc": 0.7070453912559176
+      },
+      {
+        "model": "GradientBoosting",
+        "selected": false,
+        "best_params": {
+          "learning_rate": "0.05",
+          "max_depth": "2",
+          "n_estimators": "100"
+        },
+        "cv_mean_f1": 0.711847465480493,
+        "cv_std_f1": 0.051213895291496066,
+        "accuracy": 0.6166666666666667,
+        "precision": 0.6268656716417911,
+        "recall": 0.6666666666666666,
+        "f1_score": 0.6461538461538462,
+        "roc_auc": 0.6857421331105541
+      },
+      {
+        "model": "RandomForest",
+        "selected": false,
+        "best_params": {
+          "max_depth": "10",
+          "min_samples_split": "2",
+          "n_estimators": "200"
+        },
+        "cv_mean_f1": 0.6716616604819459,
+        "cv_std_f1": 0.03472336811995594,
+        "accuracy": 0.6333333333333333,
+        "precision": 0.6507936507936508,
+        "recall": 0.6507936507936508,
+        "f1_score": 0.6507936507936508,
+        "roc_auc": 0.6764132553606238
+      },
+      {
+        "model": "KNN",
+        "selected": false,
+        "best_params": {
+          "metric": "minkowski",
+          "n_neighbors": "9",
+          "weights": "uniform"
+        },
+        "cv_mean_f1": 0.6594517582570726,
+        "cv_std_f1": 0.03581615876491379,
+        "accuracy": 0.625,
+        "precision": 0.6451612903225806,
+        "recall": 0.6349206349206349,
+        "f1_score": 0.64,
+        "roc_auc": 0.6507936507936507
+      }
+    ]
+  }
+]
